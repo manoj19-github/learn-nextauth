@@ -3,6 +3,7 @@ import { RegisterSchema } from "@/app/schema";
 import { dbConfig } from "@/db.config";
 import * as bcrypt from "bcrypt";
 import * as Z from "zod";
+import { getUserByEmail } from "../serverDetails/getUserDetails";
 export const registerAction = async (
   values: Z.infer<typeof RegisterSchema>
 ): Promise<{ message: string }> => {
@@ -14,11 +15,7 @@ export const registerAction = async (
     // const salt = await bcrypt.genSalt(10);
     // console.log("salt: ", salt);
     // const hashedPassword = await bcrypt.hash(password, 10);
-    const isEmailExists = await dbConfig.user.findUnique({
-      where: {
-        email,
-      },
-    });
+    const isEmailExists = await getUserByEmail(email);
     if (!!isEmailExists) return { error: "Email already exists" };
     console.log("hit here ");
     await dbConfig.user.create({
