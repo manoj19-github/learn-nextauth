@@ -34,14 +34,10 @@ const LoginForm = () => {
     setError("");
     setSuccess("");
     console.log("values  : ", values);
-    startTransition(() => {
-      loginAction(values)
-        .then((data) => {
-          setSuccess(data.message);
-        })
-        .catch((data) => {
-          setError(data.message);
-        });
+    startTransition(async () => {
+      const response = await loginAction(values);
+      console.log("response: ", response);
+      if (!!response && response?.status === false) setError(response.message);
     });
   };
   return (

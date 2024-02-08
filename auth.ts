@@ -7,9 +7,10 @@ import { dbConfig } from "./db.config";
 export const {
   handlers: { GET, POST },
   auth,
+  signIn,
+  signOut,
 } = NextAuth({
   adapter: PrismaAdapter(dbConfig),
   session: { strategy: "jwt" },
   ...authConfig,
-  providers: [Github],
 });
