@@ -19,10 +19,12 @@ import { Button } from "../ui/button";
 import FormError from "../FormError";
 import FormSuccess from "./FormSuccess";
 import { loginAction } from "@/app/actions/login";
+import { useRouter } from "next/navigation";
 const LoginForm = () => {
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
   const [isPending, startTransition] = useTransition();
+  const route = useRouter();
   const form = useForm<Z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -38,6 +40,7 @@ const LoginForm = () => {
       const response = await loginAction(values);
       console.log("response: ", response);
       if (!!response && response?.status === false) setError(response.message);
+      else route.replace("/settings");
     });
   };
   return (
