@@ -4,6 +4,7 @@ import { dbConfig } from "@/db.config";
 import * as bcrypt from "bcrypt";
 import * as Z from "zod";
 import { getUserByEmail } from "../serverDetails/getUserDetails";
+import { redirect } from "next/navigation";
 export const registerAction = async (
   values: Z.infer<typeof RegisterSchema>
 ): Promise<{ message: string }> => {
@@ -26,6 +27,7 @@ export const registerAction = async (
         password,
       },
     });
-    res({ message: "hello" });
+    res({ message: "sign up successfull" });
+    redirect("/auth/login");
   });
 };

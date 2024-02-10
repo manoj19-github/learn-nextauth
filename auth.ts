@@ -1,8 +1,10 @@
-import NextAuth from "next-auth";
+import NextAuth, { type DefaultSession } from "next-auth";
 import Github from "next-auth/providers/github";
 import authConfig from "./auth.config";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { dbConfig } from "./db.config";
+import { getUserById } from "./app/serverDetails/getUserDetails";
+import { UserRole } from "@prisma/client";
 
 export const {
   handlers: { GET, POST },
@@ -11,18 +13,34 @@ export const {
   signOut,
 } = NextAuth({
   callbacks: {
+    /***
+     * if user is not email verified then they can't  login
+     *  ****/
+    // async signIn({ user }) {
+    //   if (!user || !user.id) return false;
+    //   const existingUser = await getUserById(user.id);
+    //   if (!existingUser || !existingUser.emailVerified) return false;
+    //   return true;
+    // },
     async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
       }
+      if (token.role && session.user) {
+        session.user.role = token.role as UserRole;
+      }
       return session;
     },
     async jwt({ token, user }) {
-      console.log("token : ", token);
+      if (!token || !token.sub) return token;
+      const existingUser = await getUserById(token.sub);
+      if (!existingUser) return token;
+      token.role = existingUser.role;
+
       return token;
     },
   },
-  adapter: PrismaAdapter(dbConfig),
+  // adapter: PrismaAdapter(dbConfig),
   session: { strategy: "jwt" },
   ...authConfig,
 });

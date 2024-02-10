@@ -4,7 +4,7 @@ import React, { FC } from "react";
 
 interface RegisterPageProps {}
 const RegisterrPage: FC<RegisterPageProps> = (): JSX.Element => {
-  return <RegisvterForm />;
+  return <RegisterForm />;
 };
 
 export default RegisterrPage;
