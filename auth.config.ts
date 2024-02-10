@@ -3,9 +3,18 @@ import Credentials from "next-auth/providers/credentials";
 import { LoginSchema } from "./app/schema";
 import type { NextAuthConfig } from "next-auth";
 import { getUserByEmail } from "./app/serverDetails/getUserDetails";
+import Google from "next-auth/providers/google";
 
 export default {
   providers: [
+    Github({
+      clientId: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
+      clientSecret: process.env.NEXT_PUBLIC_GITHUB_CLIENT_SECRET,
+    }),
+    Google({
+      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+      clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET,
+    }),
     Credentials({
       async authorize(credentials) {
         console.log("credentials: ", credentials);

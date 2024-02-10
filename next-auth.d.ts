@@ -9,6 +9,9 @@ declare module "next-auth" {
   interface Session {
     user: ExtendedUser;
   }
+  interface User {
+    role?: UserRole;
+  }
 }
 
 declare module "next-auth/jwt" {

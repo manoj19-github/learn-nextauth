@@ -3,7 +3,10 @@ import Github from "next-auth/providers/github";
 import authConfig from "./auth.config";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { dbConfig } from "./db.config";
-import { getUserById } from "./app/serverDetails/getUserDetails";
+import {
+  getUserByEmail,
+  getUserById,
+} from "./app/serverDetails/getUserDetails";
 import { UserRole } from "@prisma/client";
 
 export const {
@@ -12,6 +15,20 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
+  pages: {
+    signIn: "/auth/login",
+    error: "/auth/error",
+  },
+  events: {
+    async linkAccount({ user }) {
+      await dbConfig.user.update({
+        where: {
+          id: user.id,
+        },
+        data: { emailVerified: new Date() },
+      });
+    },
+  },
   callbacks: {
     /***
      * if user is not email verified then they can't  login
@@ -22,7 +39,13 @@ export const {
     //   if (!existingUser || !existingUser.emailVerified) return false;
     //   return true;
     // },
+    async signIn({ user, account, profile }) {
+      console.log("SIGN IN DATA : ", { user, account, profile });
+      return true;
+    },
     async session({ token, session }) {
+      console.log("session dataset token : ", token);
+      console.log("session dataset session : ", session);
       if (token.sub && session.user) {
         session.user.id = token.sub;
       }
@@ -32,10 +55,12 @@ export const {
       return session;
     },
     async jwt({ token, user }) {
-      if (!token || !token.sub) return token;
-      const existingUser = await getUserById(token.sub);
-      if (!existingUser) return token;
-      token.role = existingUser.role;
+      console.log("token in jwt : ", token);
+      if (!token || !token.email) return token;
+
+      // const existingUser = await getUserByEmail(token.email);
+      // if (!existingUser) return token;
+      // token.role = existingUser.role;
 
       return token;
     },

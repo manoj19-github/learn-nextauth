@@ -1,4 +1,5 @@
 import { auth, signOut } from "@/auth";
+import ClientComponent from "@/components/ClientComponent";
 import { json } from "node:stream/consumers";
 import React from "react";
 
@@ -19,6 +20,7 @@ const SettingsPage = async () => {
         </form>
       </div>
       {JSON.stringify(session)}
+      <ClientComponent />
     </div>
   );
 };
